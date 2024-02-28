@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homepage</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+
+      .product {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+        flex-basis: calc(25% - 20px); /* 25% width with 20px margin */
+      }
+
+      .product img {
+        width: 100%;
+        border-radius: 8px;
+      }
+
+      .product h3 {
+        margin-top: 10px;
+        font-size: 18px;
+        color: #333;
+      }
+
+      .product p {
+        color: #666;
+      }
+
+      .product .price {
+        font-weight: bold;
+        color: #007bff;
+        margin-top: 10px;
+      }
+
+      .buy-button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .buy-button:hover {
+        background-color: #0056b3;
+      }
+
+      /* Modal styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .modal-content {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="product">
+        <img src="product.jpg" alt="Product 1" />
+        <h3>Product 1</h3>
+        <p>Description of product 1.</p>
+        <p class="price">$19.99</p>
+        <button class="buy-button" onclick="openModal(19.99)">Buy Now</button>
+      </div>
+      <div class="product">
+        <img src="product.jpg" alt="Product 1" />
+        <h3>Product 1</h3>
+        <p>Description of product 1.</p>
+        <p class="price">$19.99</p>
+        <button class="buy-button" onclick="openModal(19.99)">Buy Now</button>
+      </div>
+      <div class="product">
+        <img src="product.jpg" alt="Product 1" />
+        <h3>Product 1</h3>
+        <p>Description of product 1.</p>
+        <p class="price">$19.99</p>
+        <button class="buy-button" onclick="openModal(19.99)">Buy Now</button>
+      </div>
+      <div class="product">
+        <img src="product.jpg" alt="Product 1" />
+        <h3>Product 1</h3>
+        <p>Description of product 1.</p>
+        <p class="price">$19.99</p>
+        <button class="buy-button" onclick="openModal(19.99)">Buy Now</button>
+      </div>
+      <!-- Add more product items here -->
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal-content">
+        <div id="paypal-button-container"></div>
+        <button onclick="closeModal()">Close</button>
+      </div>
+    </div>
+
+    <script
+      src="https://www.paypal.com/sdk/js?client-id=sb&enable-funding=venmo&currency=USD"
+      data-sdk-integration-source="button-factory"
+    ></script>
+    <script>
+      function openModal(price) {
+        document.getElementById("modal").style.display = "flex";
+        document.getElementById("paypal-button-container").innerHTML = ""; // Clear previous content
+        setupPaypalButton(price);
+      }
+
+      function closeModal() {
+        document.getElementById("modal").style.display = "none";
+      }
+
+      function setupPaypalButton(price) {
+        paypal
+          .Buttons({
+            style: {
+              layout: "horizontal",
+              color: "gold",
+              shape: "pill",
+            },
+            createOrder: function (data, actions) {
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: {
+                      currency_code: "USD",
+                      value: price,
+                    },
+                  },
+                ],
+              });
+            },
+            onApprove: function (data, actions) {
+              return actions.order.capture().then(function (orderData) {
+                console.log(
+                  "Capture result",
+                  orderData,
+                  JSON.stringify(orderData, null, 2)
+                );
+                closeModal();
+                alert("Thank you for your payment!");
+              });
+            },
+            onError: function (err) {
+              console.log(err);
+            },
+          })
+          .render("#paypal-button-container");
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homepage</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+
+      .product {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+        flex-basis: calc(25% - 20px); /* 25% width with 20px margin */
+      }
+
+      .product img {
+        width: 100%;
+        border-radius: 8px;
+      }
+
+      .product h3 {
+        margin-top: 10px;
+        font-size: 18px;
+        color: #333;
+      }
+
+      .product p {
+        color: #666;
+      }
+
+      .product .price {
+        font-weight: bold;
+        color: #007bff;
+        margin-top: 10px;
+      }
+
+      .buy-button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .buy-button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="product">
+        <img src="https://via.placeholder.com/300" alt="Product 1" />
+        <h3>Product 1</h3>
+        <p>Description of product 1.</p>
+        <p class="price">$19.99</p>
+        <button class="buy-button" onclick="buyProduct(19.99)">Buy Now</button>
+      </div>
+      <div class="product">
+        <img src="https://via.placeholder.com/300" alt="Product 2" />
+        <h3>Product 2</h3>
+        <p>Description of product 2.</p>
+        <p class="price">$24.99</p>
+        <button class="buy-button" onclick="buyProduct(24.99)">Buy Now</button>
+      </div>
+      <div class="product">
+        <img src="https://via.placeholder.com/300" alt="Product 3" />
+        <h3>Product 3</h3>
+        <p>Description of product 3.</p>
+        <p class="price">$29.99</p>
+        <button class="buy-button" onclick="buyProduct(29.99)">Buy Now</button>
+      </div>
+      <div class="product">
+        <img src="https://via.placeholder.com/300" alt="Product 4" />
+        <h3>Product 4</h3>
+        <p>Description of product 4.</p>
+        <p class="price">$34.99</p>
+        <button class="buy-button" onclick="buyProduct(34.99)">Buy Now</button>
+      </div>
+      <!-- Add more product items here -->
+    </div>
+
+    <div id="smart-button-container" style="display: none">
+      <div style="text-align: center">
+        <div id="paypal-button-container"></div>
+      </div>
+    </div>
+
+    <script
+      src="https://www.paypal.com/sdk/js?client-id=sb&enable-funding=venmo&currency=USD"
+      data-sdk-integration-source="button-factory"
+    ></script>
+    <script>
+      function buyProduct(price) {
+        document.getElementById("smart-button-container").style.display =
+          "block";
+        paypal
+          .Buttons({
+            style: {
+              shape: "rect",
+              color: "gold",
+              layout: "vertical",
+              label: "paypal",
+            },
+            createOrder: function (data, actions) {
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: {
+                      currency_code: "USD",
+                      value: price,
+                    },
+                  },
+                ],
+              });
+            },
+            onApprove: function (data, actions) {
+              return actions.order.capture().then(function (orderData) {
+                console.log(
+                  "Capture result",
+                  orderData,
+                  JSON.stringify(orderData, null, 2)
+                );
+                const element = document.getElementById(
+                  "paypal-button-container"
+                );
+                element.innerHTML = "";
+                element.innerHTML = "<h3>Thank you for your payment!</h3>";
+              });
+            },
+            onError: function (err) {
+              console.log(err);
+            },
+          })
+          .render("#paypal-button-container");
+      }
+    </script>
+  </body>
+</html>
